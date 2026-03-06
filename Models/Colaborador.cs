@@ -1,17 +1,90 @@
+using tarefas.Enums;
+using tarefas.Model;
+
 namespace tarefas.Models;
-public class Colaborador
+
+public abstract class Colaborador
 {
-    public Colaborador(string idUsuario)
+    private readonly List<Tarefa> _tarefas = [];
+
+    public Colaborador(string idUsuario, string nome, DateTime dataNascimento)
     {
         Id = Guid.NewGuid().ToString();
         IdUsuario = idUsuario;
+        Nome = nome;
+        DataNascimento = dataNascimento;
     }
 
     public string Id { get; }
     public string IdUsuario { get; }
-    public string IdSuperior { get; private set; }
+    public string Nome { get; private set; }
+    public DateTime DataNascimento { get; private set; }
+    public Gerente Superior { get; private set; }
 
-    public void DefinirSuperiorDireto(string idSuperior) => IdSuperior = idSuperior;
+    public abstract CargoEnum Cargo { get; protected set; }
+    public IReadOnlyList<Tarefa> Tarefas { get  => _tarefas.AsReadOnly(); }
 
-    public string ObterCodigoGerenteResponsavelFormatado() => IdSuperior.Substring(1, 7);
+    public void AtualizarDadosPessoais(string nome, DateTime dataNascimento)
+    {
+        Nome = nome;
+        DataNascimento = dataNascimento;
+    }
+
+    public void FinalizarTarefa(string idTarefa)
+    {
+        var tarefaParaFinalizar = _tarefas?.FirstOrDefault(t => t.Id == idTarefa);
+        tarefaParaFinalizar?.Concluir();
+    }
+
+    public void IniciarTarefa(string idTarefa)
+    {
+        var tarefaParaIniciar = _tarefas?.FirstOrDefault(t => t.Id == idTarefa);
+        tarefaParaIniciar?.IniciarTarefa();
+    }
+
+    public void DefinirSuperiorDireto(Colaborador colaborador)
+    {
+        if (colaborador is not Gerente gerente)
+        {
+            Console.Error.WriteLine("O colaborador deve ser um gerente para ser definido como superior direto.");
+            return;
+        }
+
+        Superior = gerente;
+    }
+
+    public void AdicionarTarefa(string titulo, string descricao, TipoTarefaEnum tipo, string idGerente)
+    {
+        _tarefas.Add(new Tarefa(titulo, descricao, tipo, idGerente, Id)); 
+
+    }
+
+    public List<Tarefa> ListarTarefas() 
+    {
+        if (Tarefas.Count == 0)
+        {
+            Console.Error.WriteLine("Nenhuma tarefa atribuída a este colaborador.");
+            return [];
+        }
+    
+        return Tarefas.ToList();
+    }
+
+    public List<Tarefa> ListarTarefas(TarefaStatusEnum status) 
+    {
+        if (Tarefas.Count == 0)
+        {
+            Console.Error.WriteLine("Nenhuma tarefa atribuída a este colaborador.");
+            return [];
+        }
+    
+        return Tarefas.Where(t => t.Status == status).ToList();
+    }
+
+    public override string ToString()
+    {
+        return Superior is null
+            ? $"Nome: {Nome}, Cargo: {Cargo}"
+            : $"Nome: {Nome}, Cargo: {Cargo}, Gestor: {Superior.Nome}";
+    } 
 }
