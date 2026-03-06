@@ -13,13 +13,92 @@ TODO: - Criar a classe Colaborador
     - irá definir o cargo -- talvez mais tarde
     - irá definir o superior direto daquele colaborador (autoRelacionamento)
 
-TODO: Criar classe Tarefas 
-    - Definir um enum para o status da tarefa
-    - Descrição, Data Inicial e Data Finalizacao
-    - utilizar composição para relacionar o colaborador as suas tarefas
+tarefas/
+├── Enums/
+│   ├── PerfilAcessoEnum.cs
+│   └── TipoTarefaEnum.cs       ← novo
+├── Models/
+│   ├── Colaborador.cs          ← refatorado (abstrato)
+│   ├── Funcionario.cs          ← novo
+│   ├── Gerente.cs              ← novo
+│   ├── Tarefa.cs               ← novo
+│   └── Usuario.cs              ← refatorado
+└── Program.cs                  ← atualizado
 
-Herança 
-    - herdar comportamentos e propriedades de classes,
 
-polimorfismo:
-    - 
+```mermaid
+classDiagram
+    direction TB
+
+    class PerfilAcessoEnum {
+        <<enumeration>>
+        Administrador
+        Funcionario
+        Gerente
+    }
+
+    class TipoTarefaEnum {
+        <<enumeration>>
+        Simples
+        Urgente
+        Recorrente
+    }
+
+    class Tarefa {
+        +string Id
+        +string Titulo
+        +string Descricao
+        +TipoTarefaEnum Tipo
+        +DateTime DataCriacao
+        +bool Concluida
+        +Concluir() void
+        +ToString() string
+    }
+
+    class Colaborador {
+        <<abstract>>
+        +string Id
+        +string IdUsuario
+        +string Nome
+        +DateTime DataNascimento
+        +Gerente Superior
+        +List Tarefas
+        +ObterCargo() string
+        +AtualizarDadosPessoais(string, DateTime) void
+        +DefinirSuperiorDireto(Colaborador) void
+        +ListarTarefas() void
+        +ReceberTarefa(Tarefa) void
+        +IniciarTarefa(string) void
+    }
+
+    class Funcionario {
+        +ObterCargo() string
+
+    }
+
+    class Gerente {
+        +ObterCargo() string
+        +AtribuirTarefa(Colaborador, Tarefa) void
+    }
+
+    class Usuario {
+        +string Id
+        +PerfilAcessoEnum PerfilAcesso
+        +string Email
+        +string Senha
+        +Colaborador Colaborador
+        +AtualizarDadosCadastrais(string) void
+        +AtualizarSenha(string) void
+        +DefinirSuperiorDiretoDoColaborado(Colaborador) void
+        +ToString() string
+        -GerarSenhaAleatoria() string
+    }
+
+    Colaborador <|-- Funcionario
+    Colaborador <|-- Gerente
+    Usuario *-- Colaborador
+    Colaborador --> Gerente
+    Colaborador o-- Tarefa
+    Usuario ..> PerfilAcessoEnum
+    Tarefa ..> TipoTarefaEnum
+```
