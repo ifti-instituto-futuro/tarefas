@@ -10,11 +10,10 @@ namespace tarefas.Models;
 public class Tarefa
 {
 
-    public Tarefa (string titulo, string descricao, TipoTarefaEnum tipo, string idGerente, string idFuncionario)
+    public Tarefa (string titulo, string descricao, TipoTarefaEnum tipo, string idGerente)
     {
         Id = Guid.NewGuid().ToString();
         IdGerenteResponsavelCadastro = idGerente;
-        IdFuncionarioResponsavel = idFuncionario;
         Titulo = titulo;
         Descricao = descricao;
         Tipo = tipo;
@@ -32,6 +31,7 @@ public class Tarefa
     public string IdGerenteResponsavelCadastro { get; private set; }
     public string IdFuncionarioResponsavel { get; private set; }
 
+    public void AtribuirFuncionarioResponsavel(string idFuncionario) => IdFuncionarioResponsavel = idFuncionario;
 
     public void Concluir()
     {

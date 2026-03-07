@@ -1,20 +1,19 @@
-﻿// primeira classe que vai ser lida pelo compilador 
-
-
-using tarefas.Enums;
-using tarefas.Model;
+﻿using tarefas.Mock;
 using tarefas.Models;
+using tarefas.Services;
+using tarefas.Services.Interfaces;
+using tarefas.UI;
 
-Usuario usuarioGestor = new Usuario(PerfilAcessoEnum.Gerente, "arthur lanches", "arthur@lanches.com", DateTime.Parse("1990-01-01")); 
-Usuario usuarioSubordinado = new Usuario(PerfilAcessoEnum.Funcionario, "João", "joao@email.com", DateTime.Parse("1990-01-01")); 
-Usuario administrador = new Usuario(PerfilAcessoEnum.Administrador,  string.Empty, "adm@email.com", DateTime.Now); 
+//APENAS UM TESTE
+List<Usuario> usuarios = UsuarioFactory.CriarUsuarioMock();
+List<PermissaoSistema> permissoes = PermissaoFactory.CriarPermissoesMock();
 
-usuarioSubordinado.DefinirSuperiorDiretoDoColaborado(usuarioGestor.Colaborador);
+ILoginService loginService = new LoginService(usuarios, permissoes);
 
-if (usuarioGestor.Colaborador is Gerente gerente)
-    gerente.AtribuirTarefa(usuarioSubordinado.Colaborador, "Finalizar relatório", "Finalizar o relatório mensal de vendas", TipoTarefaEnum.Recorrente);
+var loginInput = LoginUI.RenderizarEObterInputsLogin();
 
-Console.WriteLine(usuarioGestor);
-Console.WriteLine(usuarioSubordinado);
+loginService.RealizarLogin(loginInput.Email, loginInput.Senha);
 
-usuarioSubordinado.Colaborador.ListarTarefas().ForEach(tarefa => Console.WriteLine(tarefa));
+var loginInputTeste = LoginUI.RenderizarEObterInputsLogin();
+
+loginService.RealizarLogin(loginInputTeste.Email, loginInputTeste.Senha);

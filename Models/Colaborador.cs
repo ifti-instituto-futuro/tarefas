@@ -53,11 +53,7 @@ public abstract class Colaborador
         Superior = gerente;
     }
 
-    public void AdicionarTarefa(string titulo, string descricao, TipoTarefaEnum tipo, string idGerente)
-    {
-        _tarefas.Add(new Tarefa(titulo, descricao, tipo, idGerente, Id)); 
-
-    }
+    internal void ReceberTarefa(Tarefa tarefa) => _tarefas.Add(tarefa);
 
     public List<Tarefa> ListarTarefas() 
     {

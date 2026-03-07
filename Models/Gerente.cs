@@ -9,7 +9,7 @@ public class Gerente : Colaborador
 
     public override CargoEnum Cargo { get; protected set; } = CargoEnum.Gerente;
 
-    public void AtribuirTarefa(Colaborador colaborador, string titulo, string descricao, TipoTarefaEnum tipo)
+    public void AtribuirTarefa(Colaborador colaborador, Tarefa tarefa)
     {
         if (colaborador is not Funcionario && colaborador is not Gerente)
         {
@@ -24,6 +24,7 @@ public class Gerente : Colaborador
             return;
         }
 
-        colaborador.AdicionarTarefa(titulo, descricao, tipo, Id);
+        tarefa.AtribuirFuncionarioResponsavel(colaborador.Id);
+        colaborador.ReceberTarefa(tarefa);
     }
 }
